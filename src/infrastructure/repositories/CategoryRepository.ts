@@ -2,7 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { ICreateCategoryDTO } from "../../domain/dtos/ICreateCategoryDTO";
 import { Category } from "../../domain/models/Category";
 import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
-import prisma from "./database";
+import prisma from "../database";
 
 class CategoryRepository implements ICategoryRepository {
     private db: PrismaClient;

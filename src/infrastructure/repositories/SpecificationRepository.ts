@@ -2,7 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { ICreateSpecificationDTO } from "../../domain/dtos/ICreateSpecificationDTO";
 import { Specification } from "../../domain/models/Specification";
 import { ISpecificationRepository } from "../../domain/repositories/ISpecificationRepository";
-import prisma from "./database";
+import prisma from "../database";
 
 class SpecificationRepository implements ISpecificationRepository {
     private db: PrismaClient;
