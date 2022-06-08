@@ -1,7 +1,6 @@
-import { ICreateCategoryDTO } from "../dtos/ICreateCategoryDTO";
+import IAddCategoryDTO from "../dtos/category/IAddCategoryDTO";
+import ICreatedCategoryDTO from "../dtos/category/ICreatedCategoryDTO";
 
-interface ICreateCategoryService {
-    execute({ name, description }: ICreateCategoryDTO): Promise<void>;
+export default interface ICreateCategoryService {
+    execute({ name, description }: IAddCategoryDTO): Promise<ICreatedCategoryDTO>;
 }
-
-export { ICreateCategoryService }

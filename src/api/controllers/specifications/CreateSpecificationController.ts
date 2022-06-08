@@ -1,16 +1,24 @@
-import { Request, Response } from "express"
-import { ICreateSpecificationService } from "../../../domain/services/ICreateSpecificationService";
+import { Request, Response } from "express";
+import { inject } from "inversify";
+import { controller, httpPost, IHttpActionResult, request, response } from "inversify-express-utils";
+import ICreateSpecificationService from "../../../domain/services/ICreateSpecificationService";
+import { CreateSpecificationService } from "../../../services/CreateSpecificationService";
+import BaseSpecificationController, { ROUTE_PREFIX } from "./BaseSpecificationController";
 
-class CreateSpecificationController {
-    constructor(private createSpecificationService: ICreateSpecificationService) { }
+@controller(ROUTE_PREFIX)
+export class CreateSpecificationController extends BaseSpecificationController {
+    constructor(
+        @inject(CreateSpecificationService)
+        private createSpecificationService: ICreateSpecificationService) {
+        super();
+    }
 
-    async handle(request: Request, response: Response): Promise<Response> {
+    @httpPost("/")
+    async handle(@request() request: Request, @response() response: Response): Promise<IHttpActionResult> {
         const { name, description } = request.body;
 
-        await this.createSpecificationService.execute({ name, description });
+        let specification = await this.createSpecificationService.execute({ name, description });
 
-        return response.status(201).send();
+        return this.created(`/${ROUTE_PREFIX}/${specification.id}`, null);
     }
 }
-
-export { CreateSpecificationController }

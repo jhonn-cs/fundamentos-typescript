@@ -1,7 +1,6 @@
-import { ICreateSpecificationDTO } from "../dtos/ICreateSpecificationDTO";
+import ICreatedSpecificationDTO from "../dtos/specification/ICreatedSpecificationDTO";
+import ICreateSpecificationDTO from "../dtos/specification/IAddSpecificationDTO";
 
-interface ICreateSpecificationService {
-    execute({ name, description }: ICreateSpecificationDTO): Promise<void>;
+export default interface ICreateSpecificationService {
+    execute({ name, description }: ICreateSpecificationDTO): Promise<ICreatedSpecificationDTO>;
 }
-
-export { ICreateSpecificationService }

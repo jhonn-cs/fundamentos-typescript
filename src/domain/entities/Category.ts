@@ -1,5 +1,3 @@
-import { v4 as uuid } from "uuid"
-
 class Category {
     id: string
     name: string;
@@ -7,8 +5,6 @@ class Category {
     created_at: Date
 
     constructor(name: string, description: string) {
-        this.id = uuid();
-        this.created_at = new Date();
         this.name = name;
         this.description = description;
     }

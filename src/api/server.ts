@@ -1,14 +1,35 @@
-import express from "express";
-import router from "./routes";
 import swaggerUi from "swagger-ui-express";
 import swaggerFile from "./swagger.json"
+import { InversifyExpressServer } from "inversify-express-utils";
+import { interfaces } from "inversify";
+import bodyParser from "body-parser";
+import "./controllers/categories/CreateCategoryController"
+import "./controllers/categories/ImportCategoryController"
+import "./controllers/categories/ListCategoryController"
+import "./controllers/specifications/CreateSpecificationController"
 
-const app = express();
+export default function configureServer(container: interfaces.Container) {
+    const server: InversifyExpressServer = new InversifyExpressServer(container, null, { rootPath: "/api" });
+    server.setConfig((app) => {
+        app.use(bodyParser.urlencoded({
+            extended: true
+        }));
 
-app.use(express.json());
+        app.use(bodyParser.json());
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+        app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+    });
 
-app.use(router);
+    server.setErrorConfig((app) => {
+        app.use((err, req, res, next) => {
+            console.error(err.stack);
+            res.status(500).send('Something broke!');
+        });
+    });
 
-app.listen(3333, () => console.log("Server is running!"));
+    const port = 3333;
+
+    server
+        .build()
+        .listen(port, () => console.log(`Server is running on port: ${port}`));
+}

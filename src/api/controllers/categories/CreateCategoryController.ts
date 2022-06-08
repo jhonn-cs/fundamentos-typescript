@@ -1,16 +1,29 @@
-import { Response, Request } from "express"
-import { ICreateCategoryService } from "../../../domain/services/ICreateCategoryService";
+import { Request, Response } from "express";
+import { inject } from "inversify";
+import { controller, httpPost, interfaces, request, response } from "inversify-express-utils";
+import ICreateCategoryService from "../../../domain/services/ICreateCategoryService";
+import { CreateCategoryService } from "../../../services/CreateCategoryService";
+import BaseCategoryController, { ROUTE_PREFIX } from "./BaseCategoryController";
 
-class CreateCategoryController {
-    constructor(private createCategoryService: ICreateCategoryService) { }
+@controller(ROUTE_PREFIX)
+export class CreateCategoryController extends BaseCategoryController {
+    constructor(
+        @inject(CreateCategoryService)
+        private createCategoryService: ICreateCategoryService) {
+        super();
+    }
 
-    async handle(request: Request, response: Response): Promise<Response> {
-        const { name, description } = request.body;
+    @httpPost("/")
+    private async handle(@request() request: Request, @response() response: Response): Promise<interfaces.IHttpActionResult> {
+        try {
+            const { name, description } = request.body;
 
-        await this.createCategoryService.execute({ name, description });
+            const category = await this.createCategoryService.execute({ name, description });
 
-        return response.status(201).send();
+            return this.created(`/${ROUTE_PREFIX}/${category.id}`, null);
+
+        } catch (error) {
+            return this.internalServerError(error);
+        }
     }
 }
-
-export { CreateCategoryController }

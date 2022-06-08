@@ -1,18 +1,20 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { ICreateCategoryDTO } from "../../domain/dtos/ICreateCategoryDTO";
-import { Category } from "../../domain/models/Category";
-import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
-import prisma from "../database";
+import { inject, injectable } from "inversify";
+import IAddCategoryDTO from "../../domain/dtos/category/IAddCategoryDTO";
+import { Category } from "../../domain/entities/Category";
+import ICategoryRepository from "../../domain/repositories/ICategoryRepository";
 
+@injectable()
 class CategoryRepository implements ICategoryRepository {
-    private db: PrismaClient;
     private categories: Prisma.CategoryDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
-    constructor() {
-        this.db = prisma;
-        this.categories = prisma.category
+
+    constructor(
+        @inject(PrismaClient)
+        private client: PrismaClient) {
+        this.categories = client.category
     }
 
-    async create({ name, description }: ICreateCategoryDTO): Promise<Category> {
+    async create({ name, description }: IAddCategoryDTO): Promise<Category> {
         const category = new Category(name, description);
 
         return await this.categories.create({
@@ -35,4 +37,4 @@ class CategoryRepository implements ICategoryRepository {
     }
 }
 
-export { CategoryRepository }
+export { CategoryRepository };

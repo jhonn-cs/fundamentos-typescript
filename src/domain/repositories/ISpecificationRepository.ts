@@ -1,9 +1,7 @@
-import { ICreateSpecificationDTO } from "../dtos/ICreateSpecificationDTO";
-import { Specification } from "../models/Specification";
+import IAddSpecificationDTO from "../dtos/specification/IAddSpecificationDTO";
+import { Specification } from "../entities/Specification";
 
-interface ISpecificationRepository {
-    create({ name, description }: ICreateSpecificationDTO): Promise<Specification>;
+export default interface ISpecificationRepository {
+    create({ name, description }: IAddSpecificationDTO): Promise<Specification>;
     findByName(name: string): Promise<Specification>;
 }
-
-export { ISpecificationRepository }

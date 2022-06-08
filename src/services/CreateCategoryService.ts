@@ -1,17 +1,21 @@
-import { ICreateCategoryDTO } from "../domain/dtos/ICreateCategoryDTO";
-import { ICategoryRepository } from "../domain/repositories/ICategoryRepository";
-import { ICreateCategoryService } from "../domain/services/ICreateCategoryService";
+import { inject, injectable } from "inversify";
+import IAddCategoryDTO from "../domain/dtos/category/IAddCategoryDTO";
+import ICreatedCategoryDTO from "../domain/dtos/category/ICreatedCategoryDTO";
+import ICategoryRepository from "../domain/repositories/ICategoryRepository";
+import ICreateCategoryService from "../domain/services/ICreateCategoryService";
+import { CategoryRepository } from "../infrastructure/repositories/CategoryRepository";
 
-class CreateCategoryService implements ICreateCategoryService {
-    constructor(private categoryrepository: ICategoryRepository) { }
+@injectable()
+export class CreateCategoryService implements ICreateCategoryService {
+    constructor(
+        @inject(CategoryRepository)
+        private categoryrepository: ICategoryRepository) { }
 
-    async execute({ name, description }: ICreateCategoryDTO): Promise<void> {
+    async execute({ name, description }: IAddCategoryDTO): Promise<ICreatedCategoryDTO> {
         const categoryAlreadyExists = await this.categoryrepository.findByName(name);
         if (categoryAlreadyExists)
             throw new Error("Category already exists.");
 
-        await this.categoryrepository.create({ name, description })
+        return await this.categoryrepository.create({ name, description }) as ICreatedCategoryDTO;
     }
 }
-
-export { CreateCategoryService }

@@ -1,14 +1,25 @@
-import { Request, Response } from "express"
-import { IListCategoryService } from "../../../domain/services/IListCategoryService";
+import { Request, Response } from "express";
+import { inject } from "inversify";
+import { controller, httpGet, IHttpActionResult, request, response } from "inversify-express-utils";
+import IListCategoryService from "../../../domain/services/IListCategoryService";
+import { ListCategoryService } from "../../../services/ListCategoryService";
+import BaseCategoryController, { ROUTE_PREFIX } from "./BaseCategoryController";
 
-class ListCategoryController {
-    constructor(private listCategoryService: IListCategoryService) { }
+@controller(ROUTE_PREFIX)
+export class ListCategoryController extends BaseCategoryController {
+    constructor(
+        @inject(ListCategoryService)
+        private listCategoryService: IListCategoryService) {
+        super();
+    }
 
-    async handle(request: Request, response: Response): Promise<Response> {
-        const categories = await this.listCategoryService.execute()
-
-        return response.json(categories).send();
+    @httpGet("/")
+    async handle(@request() request: Request, @response() response: Response): Promise<IHttpActionResult> {
+        try {
+            const categories = await this.listCategoryService.execute()
+            return this.json(categories, 200);
+        } catch (error) {
+            return this.internalServerError(error);
+        }
     }
 }
-
-export { ListCategoryController }

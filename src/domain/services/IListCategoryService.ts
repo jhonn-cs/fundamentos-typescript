@@ -1,7 +1,5 @@
-import { IListCategoryDTO } from "../dtos/IListCategoryDTO";
+import IListCategoryDTO from "../dtos/category/IListCategoryDTO";
 
-interface IListCategoryService {
+export default interface IListCategoryService {
     execute(): Promise<IListCategoryDTO[]>;
 }
-
-export { IListCategoryService }

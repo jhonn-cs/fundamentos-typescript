@@ -1,5 +1,3 @@
-interface IImportCategoryService {
+export default interface IImportCategoryService {
     execute(file: Express.Multer.File): Promise<void>;
 }
-
-export { IImportCategoryService }

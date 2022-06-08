@@ -1,19 +1,20 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { ICreateSpecificationDTO } from "../../domain/dtos/ICreateSpecificationDTO";
-import { Specification } from "../../domain/models/Specification";
-import { ISpecificationRepository } from "../../domain/repositories/ISpecificationRepository";
-import prisma from "../database";
+import { inject, injectable } from "inversify";
+import IAddSpecificationDTO from "../../domain/dtos/specification/IAddSpecificationDTO";
+import { Specification } from "../../domain/entities/Specification";
+import ISpecificationRepository from "../../domain/repositories/ISpecificationRepository";
 
+@injectable()
 class SpecificationRepository implements ISpecificationRepository {
-    private db: PrismaClient;
     private specifications: Prisma.SpecificationDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
 
-    constructor() {
-        this.db = prisma;
-        this.specifications = prisma.specification;
+    constructor(
+        @inject(PrismaClient)
+        private client: PrismaClient) {
+        this.specifications = client.specification;
     }
 
-    create({ name, description }: ICreateSpecificationDTO): Promise<Specification> {
+    create({ name, description }: IAddSpecificationDTO): Promise<Specification> {
         const specification = new Specification(name, description);
         return this.specifications.create({ data: specification });
     }
@@ -29,4 +30,5 @@ class SpecificationRepository implements ISpecificationRepository {
 
 }
 
-export { SpecificationRepository }
+export { SpecificationRepository };
+

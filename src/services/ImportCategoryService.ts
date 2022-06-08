@@ -1,20 +1,25 @@
-import { IImportCategoryService } from "../domain/services/IImportCategoryService";
-import fs from "fs"
-import { parse as csvParser } from "csv-parse"
-import { ICategoryRepository } from "../domain/repositories/ICategoryRepository";
-import { ICreateCategoryDTO } from "../domain/dtos/ICreateCategoryDTO";
+import { parse as csvParser } from "csv-parse";
+import fs from "fs";
+import { inject, injectable } from "inversify";
+import IAddCategoryDTO from "../domain/dtos/category/IAddCategoryDTO";
+import ICategoryRepository from "../domain/repositories/ICategoryRepository";
+import IImportCategoryService from "../domain/services/IImportCategoryService";
+import { CategoryRepository } from "../infrastructure/repositories/CategoryRepository";
 
-class ImportCategoryService implements IImportCategoryService {
-    constructor(private categoryRepository: ICategoryRepository) { }
+@injectable()
+export class ImportCategoryService implements IImportCategoryService {
+    constructor(
+        @inject(CategoryRepository)
+        private categoryRepository: ICategoryRepository) { }
 
-    loadCategories(file: Express.Multer.File): Promise<ICreateCategoryDTO[]> {
+    loadCategories(file: Express.Multer.File): Promise<IAddCategoryDTO[]> {
         return new Promise((resolve, reject) => {
             const stream = fs.createReadStream(file.path);
             const parseFile = csvParser();
 
             stream.pipe(parseFile)
 
-            const categories: ICreateCategoryDTO[] = [];
+            const categories: IAddCategoryDTO[] = [];
             parseFile.on("data", async (line) => {
                 const [name, description] = line;
                 categories.push({ name, description })
@@ -39,5 +44,3 @@ class ImportCategoryService implements IImportCategoryService {
     }
 
 }
-
-export { ImportCategoryService }
