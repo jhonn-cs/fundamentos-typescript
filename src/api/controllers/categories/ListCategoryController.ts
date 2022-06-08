@@ -4,10 +4,10 @@ import { IListCategoryService } from "../../../domain/services/IListCategoryServ
 class ListCategoryController {
     constructor(private listCategoryService: IListCategoryService) { }
 
-    handle(request: Request, response: Response) {
-        const categories = this.listCategoryService.execute()
+    async handle(request: Request, response: Response): Promise<Response> {
+        const categories = await this.listCategoryService.execute()
 
-        return response.json(categories);
+        return response.json(categories).send();
     }
 }
 

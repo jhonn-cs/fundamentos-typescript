@@ -32,9 +32,9 @@ class ImportCategoryService implements IImportCategoryService {
     async execute(file: Express.Multer.File): Promise<void> {
         const categories = await this.loadCategories(file);
         categories.map(async (category) => {
-            const existCategory = this.categoryRepository.findByName(category.name);
+            const existCategory = await this.categoryRepository.findByName(category.name);
             if (!existCategory)
-                this.categoryRepository.create(category);
+                await this.categoryRepository.create(category);
         });
     }
 

@@ -4,6 +4,9 @@
 #uploaded files
 tmp
 
+#prisma
+prisma/migrations
+
 # Logs
 logs
 *.log

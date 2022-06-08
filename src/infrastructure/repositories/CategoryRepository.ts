@@ -1,30 +1,37 @@
+import { Prisma, PrismaClient } from "@prisma/client";
 import { ICreateCategoryDTO } from "../../domain/dtos/ICreateCategoryDTO";
 import { Category } from "../../domain/models/Category";
 import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
+import prisma from "./database";
 
 class CategoryRepository implements ICategoryRepository {
-    private static CATEGORIES: Category[];
-    private categories: Category[];
-
+    private db: PrismaClient;
+    private categories: Prisma.CategoryDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
     constructor() {
-        if (!CategoryRepository.CATEGORIES)
-            CategoryRepository.CATEGORIES = [];
-
-        this.categories = CategoryRepository.CATEGORIES;
+        this.db = prisma;
+        this.categories = prisma.category
     }
 
-    create({ name, description }: ICreateCategoryDTO): void {
+    async create({ name, description }: ICreateCategoryDTO): Promise<Category> {
         const category = new Category(name, description);
 
-        this.categories.push(category);
+        return await this.categories.create({
+            data: category
+        });
     }
 
-    getAll(): Category[] {
-        return this.categories;
+    async getAll(): Promise<Category[]> {
+        return await this.categories.findMany();
     }
 
-    findByName(name: string): Category {
-        return this.categories.find(x => x.name == name);
+    async findByName(name: string): Promise<Category> {
+        return await this.categories.findFirst(
+            {
+                where: {
+                    name: name
+                }
+            }
+        );
     }
 }
 

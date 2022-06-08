@@ -9,8 +9,8 @@ const specificationRepository = new SpecificationRepository();
 const createSpecificationService = new CreateSpecificationService(specificationRepository);
 const createSpecificationController = new CreateSpecificationController(createSpecificationService);
 
-specificationsRoutes.post("/", (request, response) => {
-    return createSpecificationController.handle(request, response);
+specificationsRoutes.post("/", async (request, response) => {
+    return await createSpecificationController.handle(request, response);
 });
 
 export default specificationsRoutes;

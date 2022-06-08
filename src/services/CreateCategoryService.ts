@@ -5,12 +5,12 @@ import { ICreateCategoryService } from "../domain/services/ICreateCategoryServic
 class CreateCategoryService implements ICreateCategoryService {
     constructor(private categoryrepository: ICategoryRepository) { }
 
-    execute({ name, description }: ICreateCategoryDTO): void {
-        const categoryAlreadyExists = this.categoryrepository.findByName(name);
+    async execute({ name, description }: ICreateCategoryDTO): Promise<void> {
+        const categoryAlreadyExists = await this.categoryrepository.findByName(name);
         if (categoryAlreadyExists)
             throw new Error("Category already exists.");
 
-        this.categoryrepository.create({ name, description })
+        await this.categoryrepository.create({ name, description })
     }
 }
 

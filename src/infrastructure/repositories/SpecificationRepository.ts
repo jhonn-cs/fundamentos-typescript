@@ -1,25 +1,30 @@
+import { Prisma, PrismaClient } from "@prisma/client";
 import { ICreateSpecificationDTO } from "../../domain/dtos/ICreateSpecificationDTO";
 import { Specification } from "../../domain/models/Specification";
 import { ISpecificationRepository } from "../../domain/repositories/ISpecificationRepository";
+import prisma from "./database";
 
 class SpecificationRepository implements ISpecificationRepository {
-    private static SPECIFICATIONS: Specification[];
+    private db: PrismaClient;
+    private specifications: Prisma.SpecificationDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
 
-    private specifications: Specification[];
     constructor() {
-        if (!SpecificationRepository.SPECIFICATIONS)
-            SpecificationRepository.SPECIFICATIONS = [];
-
-        this.specifications = SpecificationRepository.SPECIFICATIONS;
+        this.db = prisma;
+        this.specifications = prisma.specification;
     }
 
-    create({ name, description }: ICreateSpecificationDTO): void {
+    create({ name, description }: ICreateSpecificationDTO): Promise<Specification> {
         const specification = new Specification(name, description);
-        this.specifications.push(specification);
+        return this.specifications.create({ data: specification });
     }
 
-    findByName(name: string): Specification {
-        return this.specifications.find((x) => x.name === name);
+    async findByName(name: string): Promise<Specification> {
+        return await this.specifications.findFirst(
+            {
+                where: {
+                    name: name
+                }
+            });
     }
 
 }

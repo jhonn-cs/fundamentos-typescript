@@ -5,12 +5,12 @@ import { ISpecificationRepository } from "../domain/repositories/ISpecificationR
 class CreateSpecificationService implements ICreateSpecificationService {
     constructor(private specificationRepository: ISpecificationRepository) { }
 
-    execute({ name, description }: ICreateSpecificationDTO) {
-        const specificationAlreadyExists = this.specificationRepository.findByName(name);
+    async execute({ name, description }: ICreateSpecificationDTO): Promise<void> {
+        const specificationAlreadyExists = await this.specificationRepository.findByName(name);
         if (specificationAlreadyExists)
             throw new Error("Specification already exists.");
 
-        this.specificationRepository.create({ name, description });
+        await this.specificationRepository.create({ name, description });
     }
 }
 

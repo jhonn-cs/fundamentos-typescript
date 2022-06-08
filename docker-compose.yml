@@ -1,0 +1,53 @@
+version: "2.6.0"
+
+services:
+    # prisma:
+    #     image: prismagraphql/prisma
+    #     restart: always
+    #     ports:
+    #         - '4466:4466'
+    #     environment:
+    #         PRISMA_CONFIG: |
+    #             # managementApiSecret: __YOUR_MANAGEMENT_API_SECRET__
+    #             port: 4466
+    #             databases:
+    #                 fundamentos_typescript:
+    #                     connector: postgres
+    #                     host: database
+    #                     user: docker
+    #                     password: root
+    #                     rawAccess: true
+    #                     port: 5432
+    #                     migrations: true
+    database:
+        image: postgres
+        container_name: fundamentos-typescript-postgresql
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_DB=fundamentos_typescript
+        volumes:
+            - pgdata:/data/postgres
+
+    app:
+        build: .
+        container_name: fundamentos-typescript-node
+        restart: always
+        ports:
+            - 3333:3333
+            - 9229:9229
+        environment:
+            - DATABASE_URL=postgresql://docker:root@database:5432/fundamentos_typescript?schema=public
+        volumes:
+            - .:/usr/app
+        links:
+            - database
+        depends_on:
+            - database
+
+volumes:
+    pgdata:
+        driver: local

@@ -4,10 +4,10 @@ import { ICreateSpecificationService } from "../../../domain/services/ICreateSpe
 class CreateSpecificationController {
     constructor(private createSpecificationService: ICreateSpecificationService) { }
 
-    handle(request: Request, response: Response): Response {
+    async handle(request: Request, response: Response): Promise<Response> {
         const { name, description } = request.body;
 
-        this.createSpecificationService.execute({ name, description });
+        await this.createSpecificationService.execute({ name, description });
 
         return response.status(201).send();
     }
